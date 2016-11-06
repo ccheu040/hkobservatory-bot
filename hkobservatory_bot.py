@@ -7,12 +7,19 @@ updater = telegram.ext.Updater(token=bot_token)
 dispatcher = updater.dispatcher
 
 
+# Sends the list of available topics
+def topics(bot, update):
+    TOPICS = ["current", "warning"]
+    message = "The topics I can tell you about are:\n" + "\n".join(TOPICS)
+    bot.sendMessage(chat_id=update.message.chat_id, text=message)
+
+
 # Sends information from HK Observatory about specified topic
 def tellme(bot, update, args):
     topic = " ".join(args)
 
     if not args:
-        message = "I need a topic to tell you about! See /topic for a list of available topics."
+        message = "I need a topic to tell you about! See /topics for a list of available topics."
 
     # Sends information about the current weather from RSS feed
     elif topic == "current":
@@ -35,6 +42,9 @@ def tellme(bot, update, args):
 
     bot.sendMessage(chat_id=update.message.chat_id, text=message)
 
+
+topics_handler = telegram.ext.CommandHandler("topics", topics)
+dispatcher.add_handler(topics_handler)
 
 tellme_handler = telegram.ext.CommandHandler("tellme", tellme, pass_args=True)
 dispatcher.add_handler(tellme_handler)
