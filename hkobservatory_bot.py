@@ -1,3 +1,4 @@
+import json
 import feedparser
 import bs4
 import telegram.ext
@@ -5,6 +6,19 @@ import telegram.ext
 bot_token = "228404369:AAF_vs8a2cDGiaAVrrLy8eDRzcAWobkX8qg"
 updater = telegram.ext.Updater(token=bot_token)
 dispatcher = updater.dispatcher
+
+
+# Sets default language for new chats to English
+def start(bot, update):
+    with open("user_language.txt") as f:
+        user_language = json.load(f)
+
+    with open("user_language.txt", "w") as f:
+        user_language[str(update.message.chat_id)] = "English"
+        json.dump(user_language, f)
+
+    message = "Hi, I'm HKObservatoryBot! I can send you information about /topics from the HK Observatory."
+    bot.sendMessage(chat_id=update.message.chat_id, text=message)
 
 
 # Sends the list of available topics
@@ -45,6 +59,9 @@ def tellme(bot, update, args):
 
     bot.sendMessage(chat_id=update.message.chat_id, text=message)
 
+
+start_handler = telegram.ext.CommandHandler("start", start)
+dispatcher.add_handler(start_handler)
 
 topics_handler = telegram.ext.CommandHandler("topics", topics)
 dispatcher.add_handler(topics_handler)
