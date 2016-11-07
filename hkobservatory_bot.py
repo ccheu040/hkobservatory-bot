@@ -40,6 +40,9 @@ def tellme(bot, update, args):
         warning = bs4.BeautifulSoup(rss.entries[0].summary, "html.parser")
         message = warning.get_text()
 
+    else:
+        message = "I don't know anything about that. I can only tell you about /topics."
+
     bot.sendMessage(chat_id=update.message.chat_id, text=message)
 
 
