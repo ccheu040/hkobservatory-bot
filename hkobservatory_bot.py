@@ -3,7 +3,7 @@ import feedparser
 import bs4
 import telegram.ext
 
-bot_token = "228404369:AAF_vs8a2cDGiaAVrrLy8eDRzcAWobkX8qg"
+bot_token = "243527010:AAGWz1pfH5uIKOFAH2A6M6wwIoVdhwhjxzY"
 updater = telegram.ext.Updater(token=bot_token)
 dispatcher = updater.dispatcher
 
