@@ -37,7 +37,7 @@ def inline_languages(bot, update):
                 id="English",
                 title="English",
                 input_message_content=telegram.InputTextMessageContent("OK"),
-                description="Change topic update language to English"
+                description="Select English as topic information language"
             )
         )
     if query in "繁體中文":
@@ -46,7 +46,7 @@ def inline_languages(bot, update):
                 id="Traditional",
                 title="繁體中文",
                 input_message_content=telegram.InputTextMessageContent("知道了"),
-                description="Change topic update language to 繁體中文"
+                description="Select 繁體中文 as topic information language"
             )
         )
     if query in "简体中文":
@@ -55,7 +55,7 @@ def inline_languages(bot, update):
                 id="Simplified",
                 title="简体中文",
                 input_message_content=telegram.InputTextMessageContent("知道了"),
-                description="Change topic update language to 简体中文"
+                description="Select 简体中文 as topic information language"
             )
         )
     bot.answerInlineQuery(update.inline_query.id, results)
