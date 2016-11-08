@@ -31,7 +31,12 @@ def inline_languages(bot, update):
         return
 
     results = []
-    if query.lower() in "english":
+    user_id = str(update.inline_query.from_user.id)
+    with open("user_language.txt") as f:
+        user_language = json.load(f)
+
+    # New users must choose a language for the topic information
+    if user_id not in user_language:
         results.append(
             telegram.InlineQueryResultArticle(
                 id="English",
@@ -40,7 +45,6 @@ def inline_languages(bot, update):
                 description="Select English as topic information language"
             )
         )
-    if query in "繁體中文":
         results.append(
             telegram.InlineQueryResultArticle(
                 id="Traditional",
@@ -49,7 +53,6 @@ def inline_languages(bot, update):
                 description="Select 繁體中文 as topic information language"
             )
         )
-    if query in "简体中文":
         results.append(
             telegram.InlineQueryResultArticle(
                 id="Simplified",
@@ -58,6 +61,34 @@ def inline_languages(bot, update):
                 description="Select 简体中文 as topic information language"
             )
         )
+    else:
+        if query.lower() in "english":
+            results.append(
+                telegram.InlineQueryResultArticle(
+                    id="English",
+                    title="English",
+                    input_message_content=telegram.InputTextMessageContent("OK"),
+                    description="Select English as topic information language"
+                )
+            )
+        if query in "繁體中文":
+            results.append(
+                telegram.InlineQueryResultArticle(
+                    id="Traditional",
+                    title="繁體中文",
+                    input_message_content=telegram.InputTextMessageContent("知道了"),
+                    description="Select 繁體中文 as topic information language"
+                )
+            )
+        if query in "简体中文":
+            results.append(
+                telegram.InlineQueryResultArticle(
+                    id="Simplified",
+                    title="简体中文",
+                    input_message_content=telegram.InputTextMessageContent("知道了"),
+                    description="Select 简体中文 as topic information language"
+                )
+            )
     bot.answerInlineQuery(update.inline_query.id, results)
 
 
