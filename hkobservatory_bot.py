@@ -23,6 +23,17 @@ def start(bot, update):
     bot.sendMessage(chat_id=update.message.chat_id, text=message)
 
 
+def english(bot, update):
+    with open("user_language.txt") as f:
+        user_language = json.load(f)
+
+    with open("user_language.txt", "w") as f:
+        user_language[str(update.message.chat_id)] = "English"
+        json.dump(user_language, f)
+
+    bot.sendMessage(chat_id=update.message.chat_id, text="OK")
+
+
 # Sends the list of available topics
 def topics(bot, update):
     TOPICS = ["current", "warning"]
@@ -64,6 +75,9 @@ def tellme(bot, update, args):
 
 start_handler = telegram.ext.CommandHandler("start", start)
 dispatcher.add_handler(start_handler)
+
+english_handler = telegram.ext.CommandHandler("english", english)
+dispatcher.add_handler(english_handler)
 
 topics_handler = telegram.ext.CommandHandler("topics", topics)
 dispatcher.add_handler(topics_handler)
