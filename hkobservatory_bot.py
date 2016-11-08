@@ -38,6 +38,24 @@ def inline_languages(bot, update):
                 description="Change topic update language to English"
             )
         )
+    if query in "繁體中文":
+        results.append(
+            telegram.InlineQueryResultArticle(
+                id = "繁體中文",
+                title = "繁體中文",
+                input_message_content=telegram.InputTextMessageContent("知道了"),
+                description="Change topic update language to 繁體中文"
+            )
+        )
+    if query in "简体中文":
+        results.append(
+            telegram.InlineQueryResultArticle(
+                id = "简体中文",
+                title = "简体中文",
+                input_message_content=telegram.InputTextMessageContent("知道了"),
+                description="Change topic update language to 简体中文"
+            )
+        )
     bot.answerInlineQuery(update.inline_query.id, results)
 
 
