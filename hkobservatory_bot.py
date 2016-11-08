@@ -11,15 +11,15 @@ dispatcher = updater.dispatcher
 
 # Sets default language for new chats to English
 def start(bot, update):
-    with open("user_language.txt") as f:
-        user_language = json.load(f)
-
-    with open("user_language.txt", "w") as f:
-        key = str(update.message.chat_id)
-        if key not in user_language:
-            user_language[key] = "English"
-        json.dump(user_language, f)
-
+    # with open("user_language.txt") as f:
+    #     user_language = json.load(f)
+    #
+    # with open("user_language.txt", "w") as f:
+    #     key = str(update.message.chat_id)
+    #     if key not in user_language:
+    #         user_language[key] = "English"
+    #     json.dump(user_language, f)
+    #
     message = "Hi, I'm HKObservatoryBot! I can send you information about /topics from the HK Observatory."
     bot.sendMessage(chat_id=update.message.chat_id, text=message)
 
@@ -141,7 +141,6 @@ def tellme(bot, update, args):
 
         current.table.decompose()
         current.p.p.next_sibling.replace_with("")
-        # soup.find("font", size="-1").previous_sibling.previous_sibling.previous_sibling.replace_with("")
         message = []
         for string in current.stripped_strings:
             message.append(" ".join(string.split()))
