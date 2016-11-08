@@ -61,6 +61,29 @@ def inline_languages(bot, update):
     bot.answerInlineQuery(update.inline_query.id, results)
 
 
+def inline_result(bot, update):
+    result_id = update.chosen_inline_result.result_id
+    user_id = str(update.chosen_inline_result.from_user.id)
+
+    with open("user_language.txt") as f:
+        user_language = json.load(f)
+
+    if result_id == "English":
+        with open("user_language.txt", "w") as f:
+            user_language[user_id] = "English"
+            json.dump(user_language, f)
+
+    elif result_id == "Traditional":
+        with open("user_language.txt", "w") as f:
+            user_language[user_id] = "Traditional"
+            json.dump(user_language, f)
+
+    elif result_id == "Simplified":
+        with open("user_language.txt", "w") as f:
+            user_language[user_id] = "Simplified"
+            json.dump(user_language, f)
+
+
 # Sends the list of available topics
 def topics(bot, update):
     TOPICS = ["current", "warning"]
