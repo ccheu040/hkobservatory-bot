@@ -34,6 +34,9 @@ def inline_query(bot, update):
     user_id = str(update.inline_query.from_user.id)
     with open("user_language.txt") as f:
         user_language = json.load(f)
+    with open("topics.txt") as f:
+        topics = json.load(f)
+        topics = "The topics I can tell you about are:\n" + "\n".join(topics)
 
     # New users must choose a language for the topic information
     if user_id not in user_language:
@@ -69,6 +72,15 @@ def inline_query(bot, update):
                     title="English",
                     input_message_content=telegram.InputTextMessageContent("OK"),
                     description="Select English as topic information language"
+                )
+            )
+        if query.lower() in "topics":
+            results.append(
+                telegram.InlineQueryResultArticle(
+                    id="Topics",
+                    title="Topics",
+                    input_message_content=telegram.InputTextMessageContent(topics),
+                    description="List of available topics"
                 )
             )
         if query in "繁體中文":
@@ -115,13 +127,6 @@ def inline_result(bot, update):
             json.dump(user_language, f)
 
 
-# Sends the list of available topics
-def topics(bot, update):
-    TOPICS = ["current", "warning"]
-    message = "The topics I can tell you about are:\n" + "\n".join(TOPICS)
-    bot.sendMessage(chat_id=update.message.chat_id, text=message)
-
-
 # Sends information from HK Observatory about specified topic
 def tellme(bot, update, args):
     topic = " ".join(args)
@@ -163,8 +168,8 @@ dispatcher.add_handler(inline_query_handler)
 inline_result_handler = telegram.ext.ChosenInlineResultHandler(inline_result)
 dispatcher.add_handler(inline_result_handler)
 
-topics_handler = telegram.ext.CommandHandler("topics", topics)
-dispatcher.add_handler(topics_handler)
+# topics_handler = telegram.ext.CommandHandler("topics", topics)
+# dispatcher.add_handler(topics_handler)
 
 tellme_handler = telegram.ext.CommandHandler("tellme", tellme, pass_args=True)
 dispatcher.add_handler(tellme_handler)
