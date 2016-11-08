@@ -1,6 +1,7 @@
 import json
 import feedparser
 import bs4
+import telegram
 import telegram.ext
 
 bot_token = "243527010:AAGWz1pfH5uIKOFAH2A6M6wwIoVdhwhjxzY"
@@ -23,15 +24,21 @@ def start(bot, update):
     bot.sendMessage(chat_id=update.message.chat_id, text=message)
 
 
-def english(bot, update):
-    with open("user_language.txt") as f:
-        user_language = json.load(f)
-
-    with open("user_language.txt", "w") as f:
-        user_language[str(update.message.chat_id)] = "English"
-        json.dump(user_language, f)
-
-    bot.sendMessage(chat_id=update.message.chat_id, text="OK")
+def inline_languages(bot, update):
+    query = update.inline_query.query
+    if not query:
+        return
+    results = []
+    if query in "English":
+        results.append(
+            telegram.InlineQueryResultArticle(
+                id="English",
+                title="English",
+                input_message_content=telegram.InputTextMessageContent("OK"),
+                description="Change topic update language to English"
+            )
+        )
+    bot.answerInlineQuery(update.inline_query.id, results)
 
 
 # Sends the list of available topics
@@ -76,8 +83,8 @@ def tellme(bot, update, args):
 start_handler = telegram.ext.CommandHandler("start", start)
 dispatcher.add_handler(start_handler)
 
-english_handler = telegram.ext.CommandHandler("english", english)
-dispatcher.add_handler(english_handler)
+inline_languages_handler = telegram.ext.InlineQueryHandler(inline_languages)
+dispatcher.add_handler(inline_languages_handler)
 
 topics_handler = telegram.ext.CommandHandler("topics", topics)
 dispatcher.add_handler(topics_handler)
