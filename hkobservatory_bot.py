@@ -24,12 +24,14 @@ def start(bot, update):
     bot.sendMessage(chat_id=update.message.chat_id, text=message)
 
 
+# Lets users change the language using inline mode
 def inline_languages(bot, update):
     query = update.inline_query.query
     if not query:
         return
+
     results = []
-    if query in "English":
+    if query.lower() in "english":
         results.append(
             telegram.InlineQueryResultArticle(
                 id="English",
@@ -41,8 +43,8 @@ def inline_languages(bot, update):
     if query in "繁體中文":
         results.append(
             telegram.InlineQueryResultArticle(
-                id = "繁體中文",
-                title = "繁體中文",
+                id="Traditional",
+                title="繁體中文",
                 input_message_content=telegram.InputTextMessageContent("知道了"),
                 description="Change topic update language to 繁體中文"
             )
@@ -50,8 +52,8 @@ def inline_languages(bot, update):
     if query in "简体中文":
         results.append(
             telegram.InlineQueryResultArticle(
-                id = "简体中文",
-                title = "简体中文",
+                id="Simplified",
+                title="简体中文",
                 input_message_content=telegram.InputTextMessageContent("知道了"),
                 description="Change topic update language to 简体中文"
             )
