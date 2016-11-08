@@ -25,7 +25,7 @@ def start(bot, update):
 
 
 # Lets users change the language using inline mode
-def inline_languages(bot, update):
+def inline_query(bot, update):
     query = update.inline_query.query
     if not query:
         return
@@ -157,8 +157,8 @@ def tellme(bot, update, args):
 start_handler = telegram.ext.CommandHandler("start", start)
 dispatcher.add_handler(start_handler)
 
-inline_languages_handler = telegram.ext.InlineQueryHandler(inline_languages)
-dispatcher.add_handler(inline_languages_handler)
+inline_query_handler = telegram.ext.InlineQueryHandler(inline_query)
+dispatcher.add_handler(inline_query_handler)
 
 inline_result_handler = telegram.ext.ChosenInlineResultHandler(inline_result)
 dispatcher.add_handler(inline_result_handler)
