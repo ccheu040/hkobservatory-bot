@@ -9,6 +9,13 @@ updater = telegram.ext.Updater(token=bot_token)
 dispatcher = updater.dispatcher
 
 
+def get_topics():
+    with open("topics.txt") as f:
+        topics = json.load(f)
+        topics = "The topics I can tell you about are:\n" + "\n".join(topics)
+    return topics
+
+
 # Sets default language for new chats to English
 def start(bot, update):
     # with open("user_language.txt") as f:
@@ -34,9 +41,6 @@ def inline_query(bot, update):
     user_id = str(update.inline_query.from_user.id)
     with open("user_language.txt") as f:
         user_language = json.load(f)
-    with open("topics.txt") as f:
-        topics = json.load(f)
-        topics = "The topics I can tell you about are:\n" + "\n".join(topics)
 
     # New users must choose a language for the topic information
     if user_id not in user_language:
@@ -79,7 +83,7 @@ def inline_query(bot, update):
                 telegram.InlineQueryResultArticle(
                     id="Topics",
                     title="Topics",
-                    input_message_content=telegram.InputTextMessageContent(topics),
+                    input_message_content=telegram.InputTextMessageContent(get_topics()),
                     description="List of available topics"
                 )
             )
