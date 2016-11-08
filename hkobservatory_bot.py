@@ -14,7 +14,9 @@ def start(bot, update):
         user_language = json.load(f)
 
     with open("user_language.txt", "w") as f:
-        user_language[str(update.message.chat_id)] = "English"
+        key = str(update.message.chat_id)
+        if key not in user_language:
+            user_language[key] = "English"
         json.dump(user_language, f)
 
     message = "Hi, I'm HKObservatoryBot! I can send you information about /topics from the HK Observatory."
