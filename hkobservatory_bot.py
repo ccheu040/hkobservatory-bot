@@ -160,6 +160,9 @@ dispatcher.add_handler(start_handler)
 inline_languages_handler = telegram.ext.InlineQueryHandler(inline_languages)
 dispatcher.add_handler(inline_languages_handler)
 
+inline_result_handler = telegram.ext.ChosenInlineResultHandler(inline_result)
+dispatcher.add_handler(inline_result_handler)
+
 topics_handler = telegram.ext.CommandHandler("topics", topics)
 dispatcher.add_handler(topics_handler)
 
