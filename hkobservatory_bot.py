@@ -167,9 +167,6 @@ dispatcher.add_handler(inline_query_handler)
 inline_result_handler = telegram.ext.ChosenInlineResultHandler(inline_result)
 dispatcher.add_handler(inline_result_handler)
 
-# topics_handler = telegram.ext.CommandHandler("topics", topics)
-# dispatcher.add_handler(topics_handler)
-
 tellme_handler = telegram.ext.CommandHandler("tellme", tellme, pass_args=True)
 dispatcher.add_handler(tellme_handler)
 
