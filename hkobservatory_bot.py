@@ -9,6 +9,13 @@ updater = telegram.ext.Updater(token=bot_token)
 dispatcher = updater.dispatcher
 
 
+def get_user_language(user_id):
+    with open("user_language.txt") as f:
+        user_language = json.load(f)
+    language = user_language.get(user_id, "English")
+    return language;
+
+
 def get_topics():
     with open("topics.txt") as f:
         topics = json.load(f)
@@ -17,10 +24,7 @@ def get_topics():
 
 
 def get_current(user_id):
-    with open("user_language.txt") as f:
-        user_language = json.load(f)
-
-    language = user_language.get(user_id, "English")
+    language = get_user_language(user_id)
     if language == "English":
         rss = feedparser.parse("http://rss.weather.gov.hk/rss/CurrentWeather.xml")
     elif language == "Traditional":
