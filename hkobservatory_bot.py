@@ -19,15 +19,24 @@ def get_topics():
 def get_current(user_id):
     with open("user_language.txt") as f:
         user_language = json.load(f)
-        language = user_language.get(user_id, "English")
+
+    language = user_language.get(user_id, "English")
     if language == "English":
         rss = feedparser.parse("http://rss.weather.gov.hk/rss/CurrentWeather.xml")
-        current = bs4.BeautifulSoup(rss.entries[0].summary, "html.parser")
+    elif language == "Traditional":
+        rss = feedparser.parse("http://rss.weather.gov.hk/rss/CurrentWeather_uc.xml")
+    elif language == "Simplified":
+        rss = feedparser.parse("http://gbrss.weather.gov.hk/rss/CurrentWeather_uc.xml")
 
+    current = bs4.BeautifulSoup(rss.entries[0].summary, "html.parser")
     for br in current.find_all("br"):
         if br.previous_element != br:
             br.previous_element.wrap(current.new_tag("p"))
         br.decompose()
+    for tr in current.find_all("tr"):
+        tr.decompose()
+    for span in current.find_all("span"):
+        span.decompose()
     for table in current.find_all("table"):
         if table.find_previous("p") != current.p:
             table.find_previous("p").decompose()
