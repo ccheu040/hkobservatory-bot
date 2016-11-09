@@ -53,6 +53,19 @@ def get_current(user_id):
     return message
 
 
+def get_warning(user_id):
+    language = get_user_language(user_id)
+    if language == "English":
+        rss = feedparser.parse("http://rss.weather.gov.hk/rss/WeatherWarningBulletin.xml")
+    elif language == "Traditional":
+        rss = feedparser.parse("http://rss.weather.gov.hk/rss/WeatherWarningBulletin_uc.xml")
+    elif language == "Simplified":
+        rss = feedparser.parse("http://gbrss.weather.gov.hk/rss/WeatherWarningBulletin_uc.xml")
+    warning = bs4.BeautifulSoup(rss.entries[0].summary, "html.parser")
+    message = warning.get_text()
+    return message
+
+
 def start(bot, update):
     message = "Hi, I'm HKObservatoryBot! I can send you information about /topics from the HK Observatory."
     bot.sendMessage(chat_id=update.message.chat_id, text=message)
