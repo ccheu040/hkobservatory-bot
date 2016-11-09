@@ -106,6 +106,15 @@ def inline_query(bot, update):
                 description="Current weather from the HK Observatory"
             )
         )
+    if query.lower() in "tellme warning":
+        results.append(
+            telegram.InlineQueryResultArticle(
+                id="Warning",
+                title="Warning",
+                input_message_content=telegram.InputTextMessageContent(get_warning(user_id)),
+                description="Warnings in force"
+            )
+        )
     if query in "繁體中文":
         results.append(
             telegram.InlineQueryResultArticle(
@@ -144,37 +153,6 @@ def inline_result(bot, update):
         json.dump(user_language, f)
 
 
-# Sends information from HK Observatory about specified topic
-def tellme(bot, update, args):
-    topic = " ".join(args)
-
-    if not args:
-        message = "I need a topic to tell you about! See /topics for a list of available topics."
-
-    # Sends information about the current weather from RSS feed
-    elif topic == "current":
-        rss = feedparser.parse("http://rss.weather.gov.hk/rss/CurrentWeather.xml")
-        current = bs4.BeautifulSoup(rss.entries[0].summary, "html.parser")
-
-        current.table.decompose()
-        current.p.p.next_sibling.replace_with("")
-        message = []
-        for string in current.stripped_strings:
-            message.append(" ".join(string.split()))
-        message = "\n".join(message)
-
-    # Sends information about current warnings from RSS feed
-    elif topic == "warning":
-        rss = feedparser.parse("http://rss.weather.gov.hk/rss/WeatherWarningBulletin.xml")
-        warning = bs4.BeautifulSoup(rss.entries[0].summary, "html.parser")
-        message = warning.get_text()
-
-    else:
-        message = "I don't know anything about that. I can only tell you about /topics."
-
-    bot.sendMessage(chat_id=update.message.chat_id, text=message)
-
-
 start_handler = telegram.ext.CommandHandler("start", start)
 dispatcher.add_handler(start_handler)
 
@@ -183,9 +161,6 @@ dispatcher.add_handler(inline_query_handler)
 
 inline_result_handler = telegram.ext.ChosenInlineResultHandler(inline_result)
 dispatcher.add_handler(inline_result_handler)
-
-tellme_handler = telegram.ext.CommandHandler("tellme", tellme, pass_args=True)
-dispatcher.add_handler(tellme_handler)
 
 updater.start_polling()
 updater.idle()
