@@ -115,6 +115,42 @@ def inline_query(bot, update):
                 description="Warnings in force"
             )
         )
+    if query.lower() in "subscribe current":
+        results.append(
+            telegram.InlineQueryResultArticle(
+                id="sub_current",
+                title="Subscribe Current",
+                input_message_content=telegram.InputTextMessageContent("You have subscribed to: Current"),
+                description="Subscribe to current to receive updates"
+            )
+        )
+    if query.lower() in "subscribe warning":
+        results.append(
+            telegram.InlineQueryResultArticle(
+                id="sub_warning",
+                title="Subscribe Warning",
+                input_message_content=telegram.InputTextMessageContent("You have subscribed to: Warning"),
+                description="Subscribe to warning to receive updates"
+            )
+        )
+    if query.lower() in "unsubscribe current":
+        results.append(
+            telegram.InlineQueryResultArticle(
+                id="unsub_current",
+                title="Unsubscribe Current",
+                input_message_content=telegram.InputTextMessageContent("You have unsubscribed from: Current"),
+                description="Unsubscribe from current to stop receiving updates"
+            )
+        )
+    if query.lower() in "unsubscribe warning":
+        results.append(
+            telegram.InlineQueryResultArticle(
+                id="unsub_warning",
+                title="Unsubscribe Warning",
+                input_message_content=telegram.InputTextMessageContent("You have unsubscribed from: Warning"),
+                description="Unsubscribe from warning to stop receiving updates"
+            )
+        )
     if query in "繁體中文":
         results.append(
             telegram.InlineQueryResultArticle(
@@ -153,6 +189,37 @@ def inline_result(bot, update):
                 user_language[user_id] = "Simplified"
             json.dump(user_language, f)
 
+    elif "unsub" in result_id:
+        with open("user_topics.txt") as f:
+            user_topics = json.load(f)
+
+        with open("user_topics.txt", "w") as f:
+            if user_id in user_topics:
+                try:
+                    if result_id == "unsub_current":
+                        user_topics[user_id].remove("Current")
+                    elif result_id == "unsub_warning":
+                        user_topics[user_id].remove("Warning")
+                except ValueError:
+                    pass
+            json.dump(user_topics, f)
+
+    elif "sub" in result_id:
+        with open("user_topics.txt") as f:
+            user_topics = json.load(f)
+
+        with open("user_topics.txt", "w") as f:
+            if result_id == "sub_current":
+                if user_id in user_topics:
+                    user_topics[user_id].append("Current")
+                else:
+                    user_topics[user_id] = ["Current"]
+            elif result_id == "sub_warning":
+                if user_id in user_topics:
+                    user_topics[user_id].append("Warning")
+                else:
+                    user_topics[user_id] = ["Warning"]
+            json.dump(user_topics, f)
 
 
 start_handler = telegram.ext.CommandHandler("start", start)
