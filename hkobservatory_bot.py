@@ -54,6 +54,7 @@ def inline_query(bot, update):
 
     results = []
     user_id = str(update.inline_query.from_user.id)
+
     if query.lower() in "english":
         results.append(
             telegram.InlineQueryResultArticle(
@@ -109,20 +110,14 @@ def inline_result(bot, update):
     with open("user_language.txt") as f:
         user_language = json.load(f)
 
-    if result_id == "English":
-        with open("user_language.txt", "w") as f:
+    with open("user_language.txt", "w") as f:
+        if result_id == "English":
             user_language[user_id] = "English"
-            json.dump(user_language, f)
-
-    elif result_id == "Traditional":
-        with open("user_language.txt", "w") as f:
+        elif result_id == "Traditional":
             user_language[user_id] = "Traditional"
-            json.dump(user_language, f)
-
-    elif result_id == "Simplified":
-        with open("user_language.txt", "w") as f:
+        elif result_id == "Simplified":
             user_language[user_id] = "Simplified"
-            json.dump(user_language, f)
+        json.dump(user_language, f)
 
 
 # Sends information from HK Observatory about specified topic
