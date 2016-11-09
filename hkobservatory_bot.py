@@ -40,13 +40,11 @@ def get_current(user_id):
     return message
 
 
-# Sets default language for new chats to English
 def start(bot, update):
     message = "Hi, I'm HKObservatoryBot! I can send you information about /topics from the HK Observatory."
     bot.sendMessage(chat_id=update.message.chat_id, text=message)
 
 
-# Lets users change the language using inline mode
 def inline_query(bot, update):
     query = update.inline_query.query
     if not query:
