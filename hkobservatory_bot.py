@@ -82,7 +82,7 @@ def inline_query(bot, update):
     if query.lower() in "english":
         results.append(
             telegram.InlineQueryResultArticle(
-                id="English",
+                id="lang_en",
                 title="English",
                 input_message_content=telegram.InputTextMessageContent("OK"),
                 description="Select English as topic information language"
@@ -91,7 +91,7 @@ def inline_query(bot, update):
     if query.lower() in "topics":
         results.append(
             telegram.InlineQueryResultArticle(
-                id="Topics",
+                id="topics",
                 title="Topics",
                 input_message_content=telegram.InputTextMessageContent(get_topics()),
                 description="List of available topics"
@@ -100,7 +100,7 @@ def inline_query(bot, update):
     if query.lower() in "tellme current":
         results.append(
             telegram.InlineQueryResultArticle(
-                id="Current",
+                id="tellme_current",
                 title="Current Weather",
                 input_message_content=telegram.InputTextMessageContent(get_current(user_id)),
                 description="Current weather from the HK Observatory"
@@ -109,7 +109,7 @@ def inline_query(bot, update):
     if query.lower() in "tellme warning":
         results.append(
             telegram.InlineQueryResultArticle(
-                id="Warning",
+                id="tellme_warning",
                 title="Warning",
                 input_message_content=telegram.InputTextMessageContent(get_warning(user_id)),
                 description="Warnings in force"
@@ -118,7 +118,7 @@ def inline_query(bot, update):
     if query in "繁體中文":
         results.append(
             telegram.InlineQueryResultArticle(
-                id="Traditional",
+                id="lang_trad",
                 title="繁體中文",
                 input_message_content=telegram.InputTextMessageContent("知道了"),
                 description="Select 繁體中文 as topic information language"
@@ -127,7 +127,7 @@ def inline_query(bot, update):
     if query in "简体中文":
         results.append(
             telegram.InlineQueryResultArticle(
-                id="Simplified",
+                id="lang_simp",
                 title="简体中文",
                 input_message_content=telegram.InputTextMessageContent("知道了"),
                 description="Select 简体中文 as topic information language"
@@ -140,17 +140,19 @@ def inline_result(bot, update):
     result_id = update.chosen_inline_result.result_id
     user_id = str(update.chosen_inline_result.from_user.id)
 
-    with open("user_language.txt") as f:
-        user_language = json.load(f)
+    if "lang" in result_id:
+        with open("user_language.txt") as f:
+            user_language = json.load(f)
 
-    with open("user_language.txt", "w") as f:
-        if result_id == "English":
-            user_language[user_id] = "English"
-        elif result_id == "Traditional":
-            user_language[user_id] = "Traditional"
-        elif result_id == "Simplified":
-            user_language[user_id] = "Simplified"
-        json.dump(user_language, f)
+        with open("user_language.txt", "w") as f:
+            if result_id == "lang_en":
+                user_language[user_id] = "English"
+            elif result_id == "lang_trad":
+                user_language[user_id] = "Traditional"
+            elif result_id == "lang_simp":
+                user_language[user_id] = "Simplified"
+            json.dump(user_language, f)
+
 
 
 start_handler = telegram.ext.CommandHandler("start", start)
