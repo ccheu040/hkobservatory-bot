@@ -9,20 +9,6 @@ updater = telegram.ext.Updater(token=bot_token)
 dispatcher = updater.dispatcher
 job_queue = updater.job_queue
 
-current_en = feedparser.parse("http://rss.weather.gov.hk/rss/CurrentWeather.xml")
-current_trad = feedparser.parse("http://rss.weather.gov.hk/rss/CurrentWeather_uc.xml")
-current_simp = feedparser.parse("http://gbrss.weather.gov.hk/rss/CurrentWeather_uc.xml")
-current = [current_en, current_trad, current_simp]
-
-warning_en = feedparser.parse("http://rss.weather.gov.hk/rss/WeatherWarningBulletin.xml")
-warning_trad = feedparser.parse("http://rss.weather.gov.hk/rss/WeatherWarningBulletin_uc.xml")
-warning_simp = feedparser.parse("http://gbrss.weather.gov.hk/rss/WeatherWarningBulletin_uc.xml")
-warning = [warning_en, warning_trad, warning_simp]
-
-with open("feeds.txt", "w") as f:
-    feeds = {"current":current, "warning":warning}
-    json.dump(feeds, f)
-
 
 def check_feed_update():
     try:
