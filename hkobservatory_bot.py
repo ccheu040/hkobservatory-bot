@@ -8,6 +8,46 @@ bot_token = "243527010:AAGWz1pfH5uIKOFAH2A6M6wwIoVdhwhjxzY"
 updater = telegram.ext.Updater(token=bot_token)
 dispatcher = updater.dispatcher
 
+current_en = feedparser.parse("http://rss.weather.gov.hk/rss/CurrentWeather.xml")
+current_trad = feedparser.parse("http://rss.weather.gov.hk/rss/CurrentWeather_uc.xml")
+current_simp = feedparser.parse("http://gbrss.weather.gov.hk/rss/CurrentWeather_uc.xml")
+current = [current_en, current_trad, current_simp]
+
+warning_en = feedparser.parse("http://rss.weather.gov.hk/rss/WeatherWarningBulletin.xml")
+warning_trad = feedparser.parse("http://rss.weather.gov.hk/rss/WeatherWarningBulletin_uc.xml")
+warning_simp = feedparser.parse("http://gbrss.weather.gov.hk/rss/WeatherWarningBulletin_uc.xml")
+warning = [warning_en, warning_trad, warning_simp]
+
+with open("feeds.txt", "w") as f:
+    feeds = {"current":current, "warning":warning}
+    json.dump(feeds, f)
+
+
+def check_feed_update():
+    with open("feeds.txt") as f:
+        feeds = json.load(f)
+    updates = {}
+    current_en_update = feedparser.parse("http://rss.weather.gov.hk/rss/CurrentWeather.xml")
+    warning_en_update = feedparser.parse("http://rss.weather.gov.hk/rss/WeatherWarningBulletin.xml")
+
+    if current_en_update:
+        current_en = feeds["current"][0]
+        if current_en["entries"][0]["published"] != current_en_update.entries[0].published:
+            current_trad_update = feedparser.parse("http://rss.weather.gov.hk/rss/CurrentWeather_uc.xml")
+            current_simp_update = feedparser.parse("http://gbrss.weather.gov.hk/rss/CurrentWeather_uc.xml")
+            current_update = [current_en_update, current_trad_update, current_simp_update]
+            updates["current"] = current_update
+
+    if warning_en_update:
+        warning_en = feeds["warning"][0]
+        if warning_en["entries"][0]["published"] != warning_en_update.entries[0].published:
+            warning_trad_update = feedparser.parse("http://rss.weather.gov.hk/rss/WeatherWarningBulletin_uc.xml")
+            warning_simp_update = feedparser.parse("http://gbrss.weather.gov.hk/rss/WeatherWarningBulletin_uc.xml")
+            warning_update = [warning_en_update, warning_trad_update, warning_simp_update]
+            updates["warning"] = warning_update
+
+    return updates
+
 
 def get_user_language(user_id):
     try:
