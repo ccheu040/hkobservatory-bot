@@ -25,29 +25,46 @@ with open("feeds.txt", "w") as f:
 
 
 def check_feed_update():
-    with open("feeds.txt") as f:
-        feeds = json.load(f)
-    updates = {}
-    current_en_update = feedparser.parse("http://rss.weather.gov.hk/rss/CurrentWeather.xml")
-    warning_en_update = feedparser.parse("http://rss.weather.gov.hk/rss/WeatherWarningBulletin.xml")
+    try:
+        with open("feeds.txt") as f:
+            feeds = json.load(f)
+        updates = {}
+        current_en_update = feedparser.parse("http://rss.weather.gov.hk/rss/CurrentWeather.xml")
+        warning_en_update = feedparser.parse("http://rss.weather.gov.hk/rss/WeatherWarningBulletin.xml")
 
-    if current_en_update:
-        current_en = feeds["current"][0]
-        if current_en["entries"][0]["published"] != current_en_update.entries[0].published:
-            current_trad_update = feedparser.parse("http://rss.weather.gov.hk/rss/CurrentWeather_uc.xml")
-            current_simp_update = feedparser.parse("http://gbrss.weather.gov.hk/rss/CurrentWeather_uc.xml")
-            current_update = [current_en_update, current_trad_update, current_simp_update]
-            updates["current"] = current_update
-            feeds["current"] = current_update
+        if current_en_update:
+            current_en = feeds["current"][0]
+            if current_en["entries"][0]["published"] != current_en_update.entries[0].published:
+                current_trad_update = feedparser.parse("http://rss.weather.gov.hk/rss/CurrentWeather_uc.xml")
+                current_simp_update = feedparser.parse("http://gbrss.weather.gov.hk/rss/CurrentWeather_uc.xml")
+                current_update = [current_en_update, current_trad_update, current_simp_update]
+                updates["current"] = current_update
+                feeds["current"] = current_update
 
-    if warning_en_update:
-        warning_en = feeds["warning"][0]
-        if warning_en["entries"][0]["published"] != warning_en_update.entries[0].published:
-            warning_trad_update = feedparser.parse("http://rss.weather.gov.hk/rss/WeatherWarningBulletin_uc.xml")
-            warning_simp_update = feedparser.parse("http://gbrss.weather.gov.hk/rss/WeatherWarningBulletin_uc.xml")
-            warning_update = [warning_en_update, warning_trad_update, warning_simp_update]
-            updates["warning"] = warning_update
-            feeds["warning"] = warning_update
+        if warning_en_update:
+            warning_en = feeds["warning"][0]
+            if warning_en["entries"][0]["published"] != warning_en_update.entries[0].published:
+                warning_trad_update = feedparser.parse("http://rss.weather.gov.hk/rss/WeatherWarningBulletin_uc.xml")
+                warning_simp_update = feedparser.parse("http://gbrss.weather.gov.hk/rss/WeatherWarningBulletin_uc.xml")
+                warning_update = [warning_en_update, warning_trad_update, warning_simp_update]
+                updates["warning"] = warning_update
+                feeds["warning"] = warning_update
+
+    except FileNotFoundError:
+        current_en = feedparser.parse("http://rss.weather.gov.hk/rss/CurrentWeather.xml")
+        current_trad = feedparser.parse("http://rss.weather.gov.hk/rss/CurrentWeather_uc.xml")
+        current_simp = feedparser.parse("http://gbrss.weather.gov.hk/rss/CurrentWeather_uc.xml")
+        current = [current_en, current_trad, current_simp]
+
+        warning_en = feedparser.parse("http://rss.weather.gov.hk/rss/WeatherWarningBulletin.xml")
+        warning_trad = feedparser.parse("http://rss.weather.gov.hk/rss/WeatherWarningBulletin_uc.xml")
+        warning_simp = feedparser.parse("http://gbrss.weather.gov.hk/rss/WeatherWarningBulletin_uc.xml")
+        warning = [warning_en, warning_trad, warning_simp]
+
+        with open("feeds.txt", "w") as f:
+            updates = {"current":current, "warning":warning}
+            feeds = updates
+            json.dump(updates, f)
 
     if updates:
         with open("feeds.txt", "w") as f:
