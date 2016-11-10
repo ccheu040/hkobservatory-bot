@@ -76,100 +76,100 @@ def start(bot, update):
 
 def inline_query(bot, update):
     query = update.inline_query.query
-    if not query:
-        return
 
     results = []
     user_id = str(update.inline_query.from_user.id)
 
-    if query.lower() in "english":
-        results.append(
-            telegram.InlineQueryResultArticle(
-                id="lang_en",
-                title="English",
-                input_message_content=telegram.InputTextMessageContent("OK"),
-                description="Select English as topic information language"
+    if query:
+        if query.lower() in "topics":
+            results.append(
+                telegram.InlineQueryResultArticle(
+                    id="topics",
+                    title="Topics",
+                    input_message_content=telegram.InputTextMessageContent(get_topics()),
+                    description="List of available topics"
+                )
             )
-        )
-    if query.lower() in "topics":
-        results.append(
-            telegram.InlineQueryResultArticle(
-                id="topics",
-                title="Topics",
-                input_message_content=telegram.InputTextMessageContent(get_topics()),
-                description="List of available topics"
+        if query.lower() in "tellme current":
+            results.append(
+                telegram.InlineQueryResultArticle(
+                    id="tellme_current",
+                    title="Current Weather",
+                    input_message_content=telegram.InputTextMessageContent(get_feed(user_id, "current")),
+                    description="Current weather from the HK Observatory"
+                )
             )
-        )
-    if query.lower() in "tellme current":
-        results.append(
-            telegram.InlineQueryResultArticle(
-                id="tellme_current",
-                title="Current Weather",
-                input_message_content=telegram.InputTextMessageContent(get_current(user_id)),
-                description="Current weather from the HK Observatory"
+        if query.lower() in "tellme warning":
+            results.append(
+                telegram.InlineQueryResultArticle(
+                    id="tellme_warning",
+                    title="Warning",
+                    input_message_content=telegram.InputTextMessageContent(get_feed(user_id, "warning")),
+                    description="Warnings in force"
+                )
             )
-        )
-    if query.lower() in "tellme warning":
-        results.append(
-            telegram.InlineQueryResultArticle(
-                id="tellme_warning",
-                title="Warning",
-                input_message_content=telegram.InputTextMessageContent(get_warning(user_id)),
-                description="Warnings in force"
+        if query.lower() in "subscribe current":
+            results.append(
+                telegram.InlineQueryResultArticle(
+                    id="sub_current",
+                    title="Subscribe Current",
+                    input_message_content=telegram.InputTextMessageContent("You have subscribed to: Current"),
+                    description="Subscribe to current to receive updates"
+                )
             )
-        )
-    if query.lower() in "subscribe current":
-        results.append(
-            telegram.InlineQueryResultArticle(
-                id="sub_current",
-                title="Subscribe Current",
-                input_message_content=telegram.InputTextMessageContent("You have subscribed to: Current"),
-                description="Subscribe to current to receive updates"
+        if query.lower() in "subscribe warning":
+            results.append(
+                telegram.InlineQueryResultArticle(
+                    id="sub_warning",
+                    title="Subscribe Warning",
+                    input_message_content=telegram.InputTextMessageContent("You have subscribed to: Warning"),
+                    description="Subscribe to warning to receive updates"
+                )
             )
-        )
-    if query.lower() in "subscribe warning":
-        results.append(
-            telegram.InlineQueryResultArticle(
-                id="sub_warning",
-                title="Subscribe Warning",
-                input_message_content=telegram.InputTextMessageContent("You have subscribed to: Warning"),
-                description="Subscribe to warning to receive updates"
+        if query.lower() in "unsubscribe current":
+            results.append(
+                telegram.InlineQueryResultArticle(
+                    id="unsub_current",
+                    title="Unsubscribe Current",
+                    input_message_content=telegram.InputTextMessageContent("You have unsubscribed from: Current"),
+                    description="Unsubscribe from current to stop receiving updates"
+                )
             )
-        )
-    if query.lower() in "unsubscribe current":
-        results.append(
-            telegram.InlineQueryResultArticle(
-                id="unsub_current",
-                title="Unsubscribe Current",
-                input_message_content=telegram.InputTextMessageContent("You have unsubscribed from: Current"),
-                description="Unsubscribe from current to stop receiving updates"
+        if query.lower() in "unsubscribe warning":
+            results.append(
+                telegram.InlineQueryResultArticle(
+                    id="unsub_warning",
+                    title="Unsubscribe Warning",
+                    input_message_content=telegram.InputTextMessageContent("You have unsubscribed from: Warning"),
+                    description="Unsubscribe from warning to stop receiving updates"
+                )
             )
-        )
-    if query.lower() in "unsubscribe warning":
-        results.append(
-            telegram.InlineQueryResultArticle(
-                id="unsub_warning",
-                title="Unsubscribe Warning",
-                input_message_content=telegram.InputTextMessageContent("You have unsubscribed from: Warning"),
-                description="Unsubscribe from warning to stop receiving updates"
+        if query.lower() in "english":
+            results.append(
+                telegram.InlineQueryResultArticle(
+                    id="lang_en",
+                    title="English",
+                    input_message_content=telegram.InputTextMessageContent("OK"),
+                    description="Select English as topic information language"
+                )
             )
-        )
-    if query in "繁體中文":
-        results.append(
-            telegram.InlineQueryResultArticle(
-                id="lang_trad",
-                title="繁體中文",
-                input_message_content=telegram.InputTextMessageContent("知道了"),
-                description="Select 繁體中文 as topic information language"
+        if query in "繁體中文":
+            results.append(
+                telegram.InlineQueryResultArticle(
+                    id="lang_trad",
+                    title="繁體中文",
+                    input_message_content=telegram.InputTextMessageContent("知道了"),
+                    description="Select 繁體中文 as topic information language"
+                )
             )
-        )
-    if query in "简体中文":
-        results.append(
-            telegram.InlineQueryResultArticle(
-                id="lang_simp",
-                title="简体中文",
-                input_message_content=telegram.InputTextMessageContent("知道了"),
-                description="Select 简体中文 as topic information language"
+        if query in "简体中文":
+            results.append(
+                telegram.InlineQueryResultArticle(
+                    id="lang_simp",
+                    title="简体中文",
+                    input_message_content=telegram.InputTextMessageContent("知道了"),
+                    description="Select 简体中文 as topic information language"
+                )
             )
         )
     bot.answerInlineQuery(update.inline_query.id, results)
