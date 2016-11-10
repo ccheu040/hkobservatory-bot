@@ -291,6 +291,8 @@ def send_update(bot, job):
                         language = user_language.get(user_id, "english")
                         message = get_feed_message(updates, topic, language)
                         bot.sendMessage(chat_id=user_id, text=message)
+                except telegram.Unauthorized:
+                    subscribers[topic].remove(user_id)
                 except:
                     pass
 
