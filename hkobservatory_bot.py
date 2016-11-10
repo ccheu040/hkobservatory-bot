@@ -10,8 +10,11 @@ dispatcher = updater.dispatcher
 
 
 def get_user_language(user_id):
-    with open("user_language.txt") as f:
-        user_language = json.load(f)
+    try:
+        with open("user_language.txt") as f:
+            user_language = json.load(f)
+    except FileNotFoundError:
+        user_language = {}
     language = user_language.get(user_id, "English")
     return language;
 
@@ -177,8 +180,12 @@ def inline_result(bot, update):
     user_id = str(update.chosen_inline_result.from_user.id)
 
     if "lang" in result_id:
-        with open("user_language.txt") as f:
-            user_language = json.load(f)
+        try:
+            with open("user_language.txt") as f:
+                user_language = json.load(f)
+        except FileNotFoundError:
+            user_language = {}
+
         with open("user_language.txt", "w") as f:
             if result_id == "lang_en":
                 user_language[user_id] = "English"
@@ -188,31 +195,30 @@ def inline_result(bot, update):
                 user_language[user_id] = "Simplified"
             json.dump(user_language, f)
 
-    elif ("tellme" not in result_id) and ("current" in result_id):
-        with open("current_users.txt") as f:
-            current_users = json.load(f)
-        with open("current_users.txt", "w") as f:
+    elif "sub" in result_id:
+        try:
+            with open("subscribers.txt") as f:
+                subscribers = json.load(f)
+        except FileNotFoundError:
+            subscribers = {"current":[], "warning":[]}
+
+        with open("subscribers.txt", "w") as f:
             if result_id == "sub_current":
-                current_users.append(user_id)
+                subscribers["current"].append(user_id)
             elif result_id == "unsub_current":
                 try:
-                    current_users.remove(user_id)
+                    subscribers["current"].remove(user_id)
                 except ValueError:
                     pass
-            json.dump(current_users, f)
 
-    elif ("tellme" not in result_id) and ("warning" in result_id):
-        with open("warning_users.txt") as f:
-            warning_users = json.load(f)
-        with open("warning_users.txt", "w") as f:
-            if result_id == "sub_warning":
-                warning_users.append(user_id)
+            elif result_id == "sub_warning":
+                subscribers["warning"].append(user_id)
             elif result_id == "unsub_warning":
                 try:
-                    warning_users.remove(user_id)
+                    subscribers["warning"].remove(user_id)
                 except ValueError:
                     pass
-            json.dump(warning_users, f)
+            json.dump(subscribers, f)
 
 
 start_handler = telegram.ext.CommandHandler("start", start)
