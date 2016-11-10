@@ -54,7 +54,30 @@ def check_feed_update():
     return updates
 
 
-def format_feed(feed, topic):
+def get_user_language():
+    try:
+        with open("user_language.txt") as f:
+            user_language = json.load(f)
+    except FileNotFoundError:
+        user_language = {}
+    return user_language;
+
+
+def get_topics():
+    with open("topics.txt") as f:
+        topics = json.load(f)
+        topics = "The topics I can tell you about are:\n" + "\n".join(topics)
+    return topics
+
+
+def get_feed_message(feeds, topic, language):
+    if language == "english":
+        feed = feeds[topic][0]
+    elif language == "traditional":
+        feed = feeds[topic][1]
+    elif language == "simplified":
+        feed = feeds[topic][2]
+
     format = bs4.BeautifulSoup(feed["entries"][0]["summary"], "html.parser")
     if topic == "current":
         for br in format.find_all("br"):
