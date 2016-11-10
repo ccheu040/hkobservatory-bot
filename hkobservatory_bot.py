@@ -8,8 +8,9 @@ bot_token = "243527010:AAGWz1pfH5uIKOFAH2A6M6wwIoVdhwhjxzY"
 updater = telegram.ext.Updater(token=bot_token)
 dispatcher = updater.dispatcher
 job_queue = updater.job_queue
-# Checks if feeds have updated by comparing saved feed dates to new feed
 
+
+# Checks if feeds have updated by comparing saved feed dates to new feed
 def check_feed_update():
     try:
         with open("feeds.txt") as f:
