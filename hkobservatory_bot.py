@@ -113,17 +113,28 @@ def get_feed(user_id, topic):
 
 
 def start(bot, update):
-    message = "Hi, I'm HKObservatoryBot! I can send you information about /topics from the HK Observatory."
+    message = "Hi, I'm HKObservatoryBot! Type @hkobservatory_bot to see what I can do!"
     bot.sendMessage(chat_id=update.message.chat_id, text=message)
 
 
 def inline_query(bot, update):
     query = update.inline_query.query
-
     results = []
     user_id = str(update.inline_query.from_user.id)
+    first_name = update.inline_query.from_user.first_name
 
-    if query:
+    if not query:
+        results.append(
+            telegram.InlineQueryResultArticle(
+                id="commands",
+                title="Commands",
+                input_message_content=telegram.InputTextMessageContent(
+                    ("Type @hkobservatory_bot + one of the following:\n"
+                    "topics;\ntellme + topic;\nsubscribe + topic;\nunsubscribe + topic;\nenglish;\n繁體中文;\n简体中文;")),
+                description="List of available commands"
+            )
+        )
+    else:
         if query.lower() in "topics":
             results.append(
                 telegram.InlineQueryResultArticle(
@@ -192,7 +203,7 @@ def inline_query(bot, update):
                 telegram.InlineQueryResultArticle(
                     id="lang_english",
                     title="English",
-                    input_message_content=telegram.InputTextMessageContent("OK"),
+                    input_message_content=telegram.InputTextMessageContent(first_name + "\'s language changed to English"),
                     description="Select English as topic information language"
                 )
             )
@@ -201,7 +212,7 @@ def inline_query(bot, update):
                 telegram.InlineQueryResultArticle(
                     id="lang_traditional",
                     title="繁體中文",
-                    input_message_content=telegram.InputTextMessageContent("知道了"),
+                    input_message_content=telegram.InputTextMessageContent(first_name + "\'s language changed to 繁體中文"),
                     description="Select 繁體中文 as topic information language"
                 )
             )
@@ -210,11 +221,10 @@ def inline_query(bot, update):
                 telegram.InlineQueryResultArticle(
                     id="lang_simplified",
                     title="简体中文",
-                    input_message_content=telegram.InputTextMessageContent("知道了"),
+                    input_message_content=telegram.InputTextMessageContent(first_name + "\'s language changed to 简体中文"),
                     description="Select 简体中文 as topic information language"
                 )
             )
-        )
     bot.answerInlineQuery(update.inline_query.id, results)
 
 
