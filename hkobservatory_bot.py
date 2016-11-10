@@ -8,7 +8,7 @@ bot_token = "243527010:AAGWz1pfH5uIKOFAH2A6M6wwIoVdhwhjxzY"
 updater = telegram.ext.Updater(token=bot_token)
 dispatcher = updater.dispatcher
 job_queue = updater.job_queue
-
+# Checks if feeds have updated by comparing saved feed dates to new feed
 
 def check_feed_update():
     try:
@@ -58,6 +58,7 @@ def check_feed_update():
     return updates
 
 
+# Returns language preferences for all users
 def get_user_language():
     try:
         with open("user_language.txt") as f:
@@ -74,7 +75,14 @@ def get_topics():
     return topics
 
 
-def get_feed_message(feeds, topic, language):
+# Returns the formatted feed in the user's preferred language
+def get_feed_message(user_id, topic):
+    check_feed_update()
+    user_language = get_user_language()
+    language = user_language.get(user_id, "english")
+    with open("feeds.txt") as f:
+        feeds = json.load(f)
+
     if language == "english":
         feed = feeds[topic][0]
     elif language == "traditional":
@@ -106,20 +114,12 @@ def get_feed_message(feeds, topic, language):
     return message
 
 
-def get_feed(user_id, topic):
-    check_feed_update()
-    user_language = get_user_language()
-    language = user_language.get(user_id, "english")
-    with open("feeds.txt") as f:
-        feeds = json.load(f)
-    return get_feed_message(feeds, topic, language)
-
-
 def start(bot, update):
     message = "Hi, I'm HKObservatoryBot! Type @hkobservatory_bot to see what I can do!"
     bot.sendMessage(chat_id=update.message.chat_id, text=message)
 
 
+# Handles inline queries from user
 def inline_query(bot, update):
     query = update.inline_query.query
     results = []
@@ -152,7 +152,7 @@ def inline_query(bot, update):
                 telegram.InlineQueryResultArticle(
                     id="tellme_current",
                     title="Current Weather",
-                    input_message_content=telegram.InputTextMessageContent(get_feed(user_id, "current")),
+                    input_message_content=telegram.InputTextMessageContent(get_feed_message(user_id, "current")),
                     description="Current weather from the HK Observatory"
                 )
             )
@@ -161,7 +161,7 @@ def inline_query(bot, update):
                 telegram.InlineQueryResultArticle(
                     id="tellme_warning",
                     title="Warning",
-                    input_message_content=telegram.InputTextMessageContent(get_feed(user_id, "warning")),
+                    input_message_content=telegram.InputTextMessageContent(get_feed_message(user_id, "warning")),
                     description="Warnings in force"
                 )
             )
@@ -231,6 +231,7 @@ def inline_query(bot, update):
     bot.answerInlineQuery(update.inline_query.id, results)
 
 
+# Saves language preferences and subscriptions
 def inline_result(bot, update):
     result_id = update.chosen_inline_result.result_id
     user_id = str(update.chosen_inline_result.from_user.id)
@@ -271,6 +272,7 @@ def inline_result(bot, update):
             json.dump(subscribers, f)
 
 
+# Sends updates to subscribed users
 def send_update(bot, job):
     try:
         with open("subscribers.txt") as f:
@@ -292,8 +294,10 @@ def send_update(bot, job):
                     pass
 
 
+# Bot will check for updates every hour
 job_queue.put(telegram.ext.Job(send_update, 3600.0))
 
+# Handlers for commands, inline queries and results
 start_handler = telegram.ext.CommandHandler("start", start)
 dispatcher.add_handler(start_handler)
 
