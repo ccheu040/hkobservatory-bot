@@ -171,7 +171,7 @@ def inline_query(bot, update):
                 telegram.InlineQueryResultArticle(
                     id="sub_current",
                     title="Subscribe Current",
-                    input_message_content=telegram.InputTextMessageContent("You have subscribed to: Current"),
+                    input_message_content=telegram.InputTextMessageContent(first_name + " has subscribed to: Current"),
                     description="Subscribe to current to receive updates"
                 )
             )
@@ -180,7 +180,7 @@ def inline_query(bot, update):
                 telegram.InlineQueryResultArticle(
                     id="sub_warning",
                     title="Subscribe Warning",
-                    input_message_content=telegram.InputTextMessageContent("You have subscribed to: Warning"),
+                    input_message_content=telegram.InputTextMessageContent(first_name + " has subscribed to: Warning"),
                     description="Subscribe to warning to receive updates"
                 )
             )
@@ -189,7 +189,7 @@ def inline_query(bot, update):
                 telegram.InlineQueryResultArticle(
                     id="unsub_current",
                     title="Unsubscribe Current",
-                    input_message_content=telegram.InputTextMessageContent("You have unsubscribed from: Current"),
+                    input_message_content=telegram.InputTextMessageContent(first_name + " has unsubscribed from: Current"),
                     description="Unsubscribe from current to stop receiving updates"
                 )
             )
@@ -198,7 +198,7 @@ def inline_query(bot, update):
                 telegram.InlineQueryResultArticle(
                     id="unsub_warning",
                     title="Unsubscribe Warning",
-                    input_message_content=telegram.InputTextMessageContent("You have unsubscribed from: Warning"),
+                    input_message_content=telegram.InputTextMessageContent(first_name + " has unsubscribed from: Warning"),
                     description="Unsubscribe from warning to stop receiving updates"
                 )
             )
