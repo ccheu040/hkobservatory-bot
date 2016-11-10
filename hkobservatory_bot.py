@@ -7,6 +7,7 @@ import telegram.ext
 bot_token = "243527010:AAGWz1pfH5uIKOFAH2A6M6wwIoVdhwhjxzY"
 updater = telegram.ext.Updater(token=bot_token)
 dispatcher = updater.dispatcher
+job_queue = updater.job_queue
 
 current_en = feedparser.parse("http://rss.weather.gov.hk/rss/CurrentWeather.xml")
 current_trad = feedparser.parse("http://rss.weather.gov.hk/rss/CurrentWeather_uc.xml")
@@ -256,12 +257,29 @@ def inline_result(bot, update):
                     pass
             json.dump(subscribers, f)
 
-                try:
-                    subscribers["warning"].remove(user_id)
-                except ValueError:
-                    pass
-            json.dump(subscribers, f)
 
+def send_update(bot, job):
+    try:
+        with open("subscribers.txt") as f:
+            subscribers = json.load(f)
+        user_language = get_user_language()
+    except FileNotFoundError:
+        subscribers = {}
+
+    if subscribers:
+        updates = check_feed_update()
+        if updates:
+            for topic in updates:
+                try:
+                    for user_id in subscribers[topic]:
+                        language = user_language.get(user_id, "english")
+                        message = get_feed_message(updates, topic, language)
+                        bot.sendMessage(chat_id=user_id, text=message)
+                except:
+                    pass
+
+
+job_queue.put(telegram.ext.Job(send_update, 1800.0))
 
 start_handler = telegram.ext.CommandHandler("start", start)
 dispatcher.add_handler(start_handler)
