@@ -82,9 +82,9 @@ def get_user_language():
 
 
 def get_topics():
-    with open("topics.txt") as f:
-        topics = json.load(f)
-        topics = "The topics I can tell you about are:\n" + "\n".join(topics)
+    topics = ["Current - Current weather information",
+              "Warning - Warnings in force"]
+    topics = "The topics I can tell you about are:\n" + "\n".join(topics)
     return topics
 
 
