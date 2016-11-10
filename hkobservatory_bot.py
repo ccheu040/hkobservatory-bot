@@ -49,6 +49,32 @@ def check_feed_update():
     return updates
 
 
+def format_feed(feed, topic):
+    format = bs4.BeautifulSoup(feed["entries"][0]["summary"], "html.parser")
+    if topic == "current":
+        for br in format.find_all("br"):
+            if br.previous_element != br:
+                br.previous_element.wrap(format.new_tag("p"))
+            br.decompose()
+        for tr in format.find_all("tr"):
+            tr.decompose()
+        for span in format.find_all("span"):
+            span.decompose()
+        for table in format.find_all("table"):
+            if table.find_previous("p") != format.p:
+                table.find_previous("p").decompose()
+            table.decompose()
+
+        message = []
+        for string in format.stripped_strings:
+            message.append(" ".join(string.split()))
+        message = "\n".join(message)
+
+    elif topic == "warning":
+        message = format.get_text()
+    return message
+
+
 def get_user_language(user_id):
     try:
         with open("user_language.txt") as f:
@@ -66,47 +92,18 @@ def get_topics():
     return topics
 
 
-def get_current(user_id):
+def get_feed(user_id, topic):
+    check_feed_update()
     language = get_user_language(user_id)
+    with open("feeds.txt") as f:
+        feeds = json.load(f)
     if language == "English":
-        rss = feedparser.parse("http://rss.weather.gov.hk/rss/CurrentWeather.xml")
+        feed = feeds[topic][0]
     elif language == "Traditional":
-        rss = feedparser.parse("http://rss.weather.gov.hk/rss/CurrentWeather_uc.xml")
+        feed = feeds[topic][1]
     elif language == "Simplified":
-        rss = feedparser.parse("http://gbrss.weather.gov.hk/rss/CurrentWeather_uc.xml")
-
-    current = bs4.BeautifulSoup(rss.entries[0].summary, "html.parser")
-    for br in current.find_all("br"):
-        if br.previous_element != br:
-            br.previous_element.wrap(current.new_tag("p"))
-        br.decompose()
-    for tr in current.find_all("tr"):
-        tr.decompose()
-    for span in current.find_all("span"):
-        span.decompose()
-    for table in current.find_all("table"):
-        if table.find_previous("p") != current.p:
-            table.find_previous("p").decompose()
-        table.decompose()
-
-    message = []
-    for string in current.stripped_strings:
-        message.append(" ".join(string.split()))
-    message = "\n".join(message)
-    return message
-
-
-def get_warning(user_id):
-    language = get_user_language(user_id)
-    if language == "English":
-        rss = feedparser.parse("http://rss.weather.gov.hk/rss/WeatherWarningBulletin.xml")
-    elif language == "Traditional":
-        rss = feedparser.parse("http://rss.weather.gov.hk/rss/WeatherWarningBulletin_uc.xml")
-    elif language == "Simplified":
-        rss = feedparser.parse("http://gbrss.weather.gov.hk/rss/WeatherWarningBulletin_uc.xml")
-    warning = bs4.BeautifulSoup(rss.entries[0].summary, "html.parser")
-    message = warning.get_text()
-    return message
+        feed = feeds[topic][2]
+    return format_feed(feed, topic)
 
 
 def start(bot, update):
