@@ -1,1 +1,0 @@
-["Current - Current weather update", "Warning - Warnings in force"]
