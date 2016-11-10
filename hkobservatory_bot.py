@@ -306,7 +306,7 @@ def send_update(bot, job):
                     pass
 
 
-job_queue.put(telegram.ext.Job(send_update, 1800.0))
+job_queue.put(telegram.ext.Job(send_update, 3600.0))
 
 start_handler = telegram.ext.CommandHandler("start", start)
 dispatcher.add_handler(start_handler)
