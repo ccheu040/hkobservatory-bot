@@ -92,7 +92,6 @@ def get_feed_message(feeds, topic, language):
             if table.find_previous("p") != format.p:
                 table.find_previous("p").decompose()
             table.decompose()
-
         message = []
         for string in format.stripped_strings:
             message.append(" ".join(string.split()))
@@ -103,35 +102,13 @@ def get_feed_message(feeds, topic, language):
     return message
 
 
-def get_user_language(user_id):
-    try:
-        with open("user_language.txt") as f:
-            user_language = json.load(f)
-    except FileNotFoundError:
-        user_language = {}
-    language = user_language.get(user_id, "English")
-    return language;
-
-
-def get_topics():
-    with open("topics.txt") as f:
-        topics = json.load(f)
-        topics = "The topics I can tell you about are:\n" + "\n".join(topics)
-    return topics
-
-
 def get_feed(user_id, topic):
     check_feed_update()
-    language = get_user_language(user_id)
+    user_language = get_user_language()
+    language = user_language.get(user_id, "english")
     with open("feeds.txt") as f:
         feeds = json.load(f)
-    if language == "English":
-        feed = feeds[topic][0]
-    elif language == "Traditional":
-        feed = feeds[topic][1]
-    elif language == "Simplified":
-        feed = feeds[topic][2]
-    return format_feed(feed, topic)
+    return get_feed_message(feeds, topic, language)
 
 
 def start(bot, update):
@@ -212,7 +189,7 @@ def inline_query(bot, update):
         if query.lower() in "english":
             results.append(
                 telegram.InlineQueryResultArticle(
-                    id="lang_en",
+                    id="lang_english",
                     title="English",
                     input_message_content=telegram.InputTextMessageContent("OK"),
                     description="Select English as topic information language"
@@ -221,7 +198,7 @@ def inline_query(bot, update):
         if query in "繁體中文":
             results.append(
                 telegram.InlineQueryResultArticle(
-                    id="lang_trad",
+                    id="lang_traditional",
                     title="繁體中文",
                     input_message_content=telegram.InputTextMessageContent("知道了"),
                     description="Select 繁體中文 as topic information language"
@@ -230,7 +207,7 @@ def inline_query(bot, update):
         if query in "简体中文":
             results.append(
                 telegram.InlineQueryResultArticle(
-                    id="lang_simp",
+                    id="lang_simplified",
                     title="简体中文",
                     input_message_content=telegram.InputTextMessageContent("知道了"),
                     description="Select 简体中文 as topic information language"
@@ -245,6 +222,7 @@ def inline_result(bot, update):
     user_id = str(update.chosen_inline_result.from_user.id)
 
     if "lang" in result_id:
+        language = result_id[5:]
         try:
             with open("user_language.txt") as f:
                 user_language = json.load(f)
@@ -252,33 +230,32 @@ def inline_result(bot, update):
             user_language = {}
 
         with open("user_language.txt", "w") as f:
-            if result_id == "lang_en":
-                user_language[user_id] = "English"
-            elif result_id == "lang_trad":
-                user_language[user_id] = "Traditional"
-            elif result_id == "lang_simp":
-                user_language[user_id] = "Simplified"
+            if result_id == ("lang_" + language):
+                user_language[user_id] = language
             json.dump(user_language, f)
 
     elif "sub" in result_id:
+        topic = result_id[4:]
         try:
             with open("subscribers.txt") as f:
                 subscribers = json.load(f)
         except FileNotFoundError:
-            subscribers = {"current":[], "warning":[]}
+            subscribers = {}
 
         with open("subscribers.txt", "w") as f:
-            if result_id == "sub_current":
-                subscribers["current"].append(user_id)
-            elif result_id == "unsub_current":
+            if result_id == ("sub_" + topic):
                 try:
-                    subscribers["current"].remove(user_id)
-                except ValueError:
+                    if user_id not in subscribers[topic]:
+                        subscribers[topic].append(user_id)
+                except KeyError:
+                    subscribers[topic] = [user_id]
+            elif result_id == ("unsub_" + topic):
+                try:
+                    subscribers[topic].remove(user_id)
+                except:
                     pass
+            json.dump(subscribers, f)
 
-            elif result_id == "sub_warning":
-                subscribers["warning"].append(user_id)
-            elif result_id == "unsub_warning":
                 try:
                     subscribers["warning"].remove(user_id)
                 except ValueError:
