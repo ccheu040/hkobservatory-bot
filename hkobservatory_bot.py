@@ -229,7 +229,7 @@ def inline_query(bot, update):
                     description="Select 简体中文 as topic information language"
                 )
             )
-    bot.answerInlineQuery(update.inline_query.id, results, cache_time=5)
+    bot.answerInlineQuery(update.inline_query.id, results, cache_time=0)
 
 
 # Saves language preferences and subscriptions
